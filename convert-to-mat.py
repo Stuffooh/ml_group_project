@@ -5,6 +5,10 @@ from collections import defaultdict
 import numpy as np
 from scipy.io import savemat
 
+CATEGORIES = ["02691156", "02773838", "02954340", "02958343", "03001627", 
+             "03261776", "03467517", "03624134", "03636649", "03642806",
+             "03790512", "03797390", "03948459", "04099429", "04225987", "04379243"]
+
 usage = """\
 Usage:  convert-to-mat point-files-directory labels-file mat-dir
 
@@ -28,6 +32,7 @@ print(f"Points: {POINTS_DIRECTORY}\nLabels: {LABELS_FNAME}\nMat dir: {MATDIR}")
 yes = input("Good? Type yes... ")
 if yes.strip() != "yes":
     exit(0)
+
 
 
 def read_csv(data):
@@ -59,44 +64,38 @@ def read_obj_file(category, mod_id):
         return None
 
 
-print('Extracting labels -- ', end="")
 
 with open(LABELS_FNAME, 'r') as f:
-    model_ids, categories, labels = tuple(zip(*read_csv(f.read())))
+    model_ids, categories, labels = tuple(zip(*((mid, category, label)
+                                                for mid, category, label in read_csv(f.read())
+                                                if category in CATEGORIES)))
 
 LABEL_INDEX = index(labels)
-CATEGORY_INDEX = index(categories)
+CATEGORY_INDEX = index(CATEGORIES)
 
-print("done")
+categories_grouped = defaultdict(lambda: (list(), list()))
 
-categories_grouped = defaultdict(lambda: {'labels': list(), 'models': list()})
 
 for mid, category, label in zip(model_ids, categories, labels):
-    categories_grouped[category]['models'].append(mid)
-    categories_grouped[category]['labels'].append(label)
+    categories_grouped[category][0].append(mid)
+    categories_grouped[category][1].append(label)
 
-
-CATEGORY_INDEX = index(list(categories_grouped.keys())[:15])
 
 def obj2mat(mid, category, label):
-    import random
-    fake_label = random.randint(1, 50)
     coords = read_obj_file(category, mid)
     if coords is None:
         return
     n = len(coords)
-    label_array = np.ones((1, n)) * fake_label
+    label_array = np.ones((1, n)) * LABEL_INDEX[label]
     point_array = np.array(coords)
     category_array = np.array([[CATEGORY_INDEX[category]]])
     savemat(os.path.join(MATDIR, f'{mid}.mat'),
             {'points': point_array, 'labels': label_array, 'category': category_array})
 
 
-
-for category, ml in tuple(categories_grouped.items())[:15]:
-    model_ids, labels = ml['models'], ml['labels']
-    for model_id, label in zip(model_ids, labels):
-        print(f"Created file {model_id}.obj")
+for category in CATEGORIES:
+    for model_id, label in zip(*categories_grouped[category]):
+        print(f"Created file {model_id}.mat")
         obj2mat(model_id, category, label)
 
 """
