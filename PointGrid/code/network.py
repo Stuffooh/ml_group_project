@@ -29,18 +29,18 @@ def leak_relu(x, leak=0.1, scope=None):
 def integer_label_to_one_hot_label(integer_label):
     if (len(integer_label.shape) == 0):
         one_hot_label = np.zeros((NUM_CATEGORY))
-        one_hot_label[integer_label] = 1
+        one_hot_label[int(integer_label)] = 1
     elif (len(integer_label.shape) == 1):
         one_hot_label = np.zeros((integer_label.shape[0], NUM_SEG_PART))
         for i in range(integer_label.shape[0]):
-            one_hot_label[i, integer_label[i]] = 1
+            one_hot_label[i, int(integer_label[i])] = 1
     elif (len(integer_label.shape) == 4):
         one_hot_label = np.zeros((N, N, N, K, NUM_SEG_PART))
         for i in range(N):
           for j in range(N):
             for k in range(N):
               for l in range(K):
-                one_hot_label[i, j, k, l, integer_label[i, j, k, l]] = 1
+                one_hot_label[i, j, k, l, int(integer_label[i, j, k, l])] = 1
     else:
         raise
     return one_hot_label
