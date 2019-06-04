@@ -78,7 +78,7 @@ CATEGORY_INDEX = index(CATEGORIES)
 print(f"NUMBER OF SUB-CATEGORIES: {len(LABEL_INDEX)}")
 print(f"NUMBER OF CATEGORIES: {len(CATEGORY_INDEX)}")
 
-if input("Coninue? (yes/no) ").strip() != "yes": exit(0)
+if input("Continue? (yes/no) ").strip() != "yes": exit(0)
 
 def convert_obj_to_mat(model_id, category, label):
     coords = read_obj_file(category, model_id)
@@ -93,8 +93,9 @@ print(f"Creating {len(labels)} files")
 progress_step = max(len(labels) // 1000, 1)
 for i, (model_id, category, label) in enumerate(labels):
     if i % progress_step == 0:
-        k = 100 * i / len(labels)
-        print(f"\r({'|'*int(k)}{' '*(100-int(k))}) {round(k, 2)}%", end="", flush=True)
+        percent = round(100 * i / len(labels), 2)
+        progress = int(50 * i / len(labels))
+        print(f"\r({'|'*progress}{' '*(50-progress)}) {percent}%", end="", flush=True)
     convert_obj_to_mat(model_id, category, label)
 print('')
 
