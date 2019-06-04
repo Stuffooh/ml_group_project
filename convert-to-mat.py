@@ -83,9 +83,10 @@ def convert_obj_to_mat(model_id, category, label):
     savemat(os.path.join(MATDIR, f'{model_id}.mat'),
             {'points': point_array, 'labels': label_array, 'category': category_array})
 
-
-for model_id, category, label in labels:
-    print(f"Created file {model_id}.mat")
+print(f"Creating {len(labels)} files")
+for i, (model_id, category, label) in enumerate(labels):
+    if (i % (len(labels) // 100)) == 0:
+        print(f"{int(100 * i / len(labels))}%")
     convert_obj_to_mat(model_id, category, label)
 
 
