@@ -191,7 +191,7 @@ def get_model(pointgrid, is_training):
     pred_cat = tf_util.fully_connected(do2, NUM_CATEGORY, activation_fn=None, bn=False, scope='pred_cat')
 
     # Segmentation Network
-    cat_features = tf.tile(tf.reshape(tf.concat([fc2, pred_cat], axis=1), [batch_size, 1, 1, 1, -1]), [1, N/16, N/16, N/16, 1])
+    cat_features = tf.tile(tf.reshape(tf.concat([fc2, pred_cat], axis=1), [batch_size, 1, 1, 1, -1]), [1, N//16, N//16, N//16, 1])
     conv9_cat = tf.concat([conv9, cat_features], axis=4)
     deconv1 = tf_util.conv3d_transpose(conv9_cat, 256, [3,3,3], scope='deconv1', activation_fn=leak_relu, bn=True, is_training=is_training, stride=[2,2,2], padding='SAME') # N/8
     conv7_deconv1 = tf.concat(axis=4, values=[conv7, deconv1])
