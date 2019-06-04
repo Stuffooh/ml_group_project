@@ -1,0 +1,3 @@
+PointGrid/data/ShapeNet/train/*
+__pycache__
+train_results
