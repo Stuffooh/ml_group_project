@@ -28,6 +28,10 @@ print(f"Points: {POINTS_DIRECTORY}\nLabels: {LABELS_FILE_NAME}\nMat dir: {MATDIR
 if input("Coninue? (yes/no) ").strip() != "yes": exit(0)
 
 
+num_categories = int(input("How many categories to use? ").strip())
+CATEGORIES = CATEGORIES[num_categories]
+
+
 def read_csv(data):
     # skip first row, thats the headers
     for row in data.strip().split('\n')[1:]:
@@ -66,6 +70,10 @@ labels = [row for row in labels
 LABEL_INDEX = index([row[2] for row in labels])
 CATEGORY_INDEX = index(CATEGORIES)
 
+print(f"NUMBER OF SUB-CATEGORIES: {len(LABEL_INDEX)}")
+print(f"NUMBER OF CATEGORIES: {len(CATEGORY_INDEX)}")
+
+if input("Coninue? (yes/no) ").strip() != "yes": exit(0)
 
 def convert_obj_to_mat(model_id, category, label):
     coords = read_obj_file(category, model_id)
@@ -80,3 +88,5 @@ def convert_obj_to_mat(model_id, category, label):
 for model_id, category, label in labels:
     print(f"Created file {model_id}.mat")
     convert_obj_to_mat(model_id, category, label)
+
+
