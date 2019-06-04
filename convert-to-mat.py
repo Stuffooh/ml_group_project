@@ -24,10 +24,10 @@ if len(sys.argv) < 4:
     exit(0)
 
 POINTS_DIRECTORY = sys.argv[1]
-LABELS_FNAME = sys.argv[2]
+LABELS_FILE_NAME = sys.argv[2]
 MATDIR = sys.argv[3]
 
-print(f"Points: {POINTS_DIRECTORY}\nLabels: {LABELS_FNAME}\nMat dir: {MATDIR}")
+print(f"Points: {POINTS_DIRECTORY}\nLabels: {LABELS_FILE_NAME}\nMat dir: {MATDIR}")
 
 yes = input("Good? Type yes... ")
 if yes.strip() != "yes":
@@ -45,58 +45,49 @@ def index(values):
     return {value: i for i, value in enumerate(set(values))}
 
 
-def extract_points(data):
+def extract_points_from_obj(data):
     for match in re.findall(r'v\s*([\d.-]+)\s*([\d.-]+)\s*([\d.-]+)', data):
         yield tuple(map(float, match))
 
 
 def read_obj_file(category, mod_id):
-    fname = f"model_{mod_id}.obj"
+    file_name = f"model_{mod_id}.obj"
+    file_path = os.path.join(POINTS_DIRECTORY, category, file_name)
     try:
-        with open(os.path.join(POINTS_DIRECTORY, category, fname)) as f:
-            coords  = tuple(extract_points(f.read()))
-        return coords
+        with open(file_path) as f:
+            return tuple(extract_points_from_obj(f.read()))
     except FileNotFoundError:
-        print(f"{fname} not found, skipping..")
+        print(f"{file_path} not found, skipping..")
         return None
     except ValueError:
-        print(f"Error reading file {fname}, skipping...") 
+        print(f"Error reading file {file_path}, skipping...") 
         return None
 
 
 
-with open(LABELS_FNAME, 'r') as f:
-    model_ids, categories, labels = tuple(zip(*((mid, category, label)
-                                                for mid, category, label in read_csv(f.read())
-                                                if category in CATEGORIES)))
+with open(LABELS_FILE_NAME, 'r') as f:
+    labels = read_csv(f.read())
 
-LABEL_INDEX = index(labels)
+labels = [row for row in labels
+          if row[1] in CATEGORIES]
+
+LABEL_INDEX = index([row[2] for row in labels])
 CATEGORY_INDEX = index(CATEGORIES)
-
-categories_grouped = defaultdict(lambda: (list(), list()))
-
-
-for mid, category, label in zip(model_ids, categories, labels):
-    categories_grouped[category][0].append(mid)
-    categories_grouped[category][1].append(label)
 
 
 def obj2mat(mid, category, label):
     coords = read_obj_file(category, mid)
-    if coords is None:
-        return
-    n = len(coords)
-    label_array = np.ones((1, n)) * LABEL_INDEX[label]
+    if coords is None: return
     point_array = np.array(coords)
-    category_array = np.array([[CATEGORY_INDEX[category]]])
+    label_array = np.ones((1, len(coords))) + LABEL_INDEX[label]
+    category_array = np.ones((1, 1)) * CATEGORY_INDEX[category]
     savemat(os.path.join(MATDIR, f'{mid}.mat'),
             {'points': point_array, 'labels': label_array, 'category': category_array})
 
 
-for category in CATEGORIES:
-    for model_id, label in zip(*categories_grouped[category]):
-        print(f"Created file {model_id}.mat")
-        obj2mat(model_id, category, label)
+for model_id, category, label in labels:
+    print(f"Created file {model_id}.mat")
+    obj2mat(model_id, category, label)
 
 """
 def create_category_mat(category, model_ids, labels):
