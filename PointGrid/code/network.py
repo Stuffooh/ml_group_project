@@ -14,8 +14,8 @@ import tf_util
 
 N = 16 # grid size is N x N x N
 K = 4 # each cell has K points
-NUM_CATEGORY = 16
-NUM_SEG_PART = 95+1
+NUM_CATEGORY = 3
+NUM_SEG_PART = 19+1
 NUM_PER_POINT_FEATURES = 3
 NUM_FEATURES = K * NUM_PER_POINT_FEATURES + 1
 

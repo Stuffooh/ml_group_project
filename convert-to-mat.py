@@ -27,9 +27,8 @@ MATDIR = sys.argv[3]
 print(f"Points: {POINTS_DIRECTORY}\nLabels: {LABELS_FILE_NAME}\nMat dir: {MATDIR}")
 if input("Coninue? (yes/no) ").strip() != "yes": exit(0)
 
-
 num_categories = int(input("How many categories to use? ").strip())
-CATEGORIES = CATEGORIES[num_categories]
+CATEGORIES = CATEGORIES[:num_categories]
 
 
 def read_csv(data):
