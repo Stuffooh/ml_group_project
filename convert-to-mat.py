@@ -90,9 +90,12 @@ def convert_obj_to_mat(model_id, category, label):
             {'points': point_array, 'labels': label_array, 'category': category_array})
 
 print(f"Creating {len(labels)} files")
+progress_step = max(len(labels) // 1000, 1)
 for i, (model_id, category, label) in enumerate(labels):
-    if (i % (len(labels) // 100)) == 0:
-        print(f"{int(100 * i / len(labels))}%")
+    if i % progress_step == 0:
+        k = 100 * i / len(labels)
+        print(f"\r({'|'*int(k)}{' '*(100-int(k))}) {round(k, 2)}%", end="", flush=True)
     convert_obj_to_mat(model_id, category, label)
+print('')
 
 
