@@ -3,6 +3,7 @@ import sys
 import re
 import numpy as np
 from scipy.io import savemat
+from progress import ProgressBar
 
 CATEGORIES = ["02691156", "02773838", "02954340", "02958343", "03001627",
               "03261776", "03467517", "03624134", "03636649", "03642806",
@@ -91,11 +92,10 @@ def convert_obj_to_mat(model_id, category, label):
 
 print(f"Creating {len(labels)} files")
 progress_step = max(len(labels) // 1000, 1)
+progress_bar = ProgressBar(len(labels))
 for i, (model_id, category, label) in enumerate(labels):
     if i % progress_step == 0:
-        percent = round(100 * i / len(labels), 2)
-        progress = int(50 * i / len(labels))
-        print(f"\r({'|'*progress}{' '*(50-progress)}) {percent}%", end="", flush=True)
+        progress_bar.update(i)
     convert_obj_to_mat(model_id, category, label)
 print('')
 

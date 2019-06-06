@@ -25,6 +25,18 @@ def leak_relu(x, leak=0.1, scope=None):
     return tf.where(x >= 0, x, leak * x)
 
 
+def dist(p1, p2):
+    return np.sqrt((p1[:, 0].reshape(1, -1) - p2[:, 0].reshape(-1, 1))**2 + \
+                   (p1[:, 1].reshape(1, -1) - p2[:, 1].reshape(-1, 1))**2)
+
+
+def choose_k_furthest(points, k):
+    chosen = []
+    chosen.append(np.random.randint(0, len(points)-1))
+    for i in range(1, k):
+        chosen.append(dist(points[chosen], points).min(axis=1).argmax())
+    return chosen
+
 
 def integer_label_to_one_hot_label(integer_label):
     if (len(integer_label.shape) == 0):
@@ -78,7 +90,8 @@ def pc2voxel(pc, pc_label):
               label[i, j, k, :, :] = 0
               label[i, j, k, :, 0] = 1
           elif (len(L[u]) >= K):
-              choice = np.random.choice(L[u], size=K, replace=False)
+              #choice = np.random.choice(L[u], size=K, replace=False)
+              choice = choose_k_furthest(L[u], K)
               local_points = pc[choice, :] - np.array([-1.0 + (i + 0.5) * 2.0 / N, -1.0 + (j + 0.5) * 2.0 / N, -1.0 + (k + 0.5) * 2.0 / N], dtype=np.float32)
               data[i, j, k, 0 : K * NUM_PER_POINT_FEATURES] = np.reshape(local_points, (K * NUM_PER_POINT_FEATURES))
               data[i, j, k, K * NUM_PER_POINT_FEATURES] = 1.0
