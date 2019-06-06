@@ -41,7 +41,8 @@ CATEGORIES = [CATEGORIES[CATEGORY_NAMES.index(c)] for c in chosen_categories]
 def read_csv(data):
     # skip first row, thats the headers
     for row in data.strip().split('\n')[1:]:
-        yield tuple(map(str.strip, re.split(r'[,;]', row)))[:3]
+        if 'test' in row:
+            yield tuple(map(str.strip, re.split(r'[,;]', row)))[:3]
 
 
 def index(values):
