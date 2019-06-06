@@ -14,8 +14,8 @@ import tf_util
 
 N = 16 # grid size is N x N x N
 K = 4 # each cell has K points
-NUM_CATEGORY = 3
-NUM_SEG_PART = 19+1
+NUM_CATEGORY = 2
+NUM_SEG_PART = 3+1
 NUM_PER_POINT_FEATURES = 3
 NUM_FEATURES = K * NUM_PER_POINT_FEATURES + 1
 
@@ -34,7 +34,7 @@ def choose_k_furthest(points, k):
     chosen = []
     chosen.append(np.random.randint(0, len(points)-1))
     for i in range(1, k):
-        chosen.append(dist(points[chosen], points).min(axis=1).argmax())
+        chosen.append(dist(points[chosen, :], points).min(axis=1).argmax())
     return chosen
 
 
@@ -91,7 +91,7 @@ def pc2voxel(pc, pc_label):
               label[i, j, k, :, 0] = 1
           elif (len(L[u]) >= K):
               #choice = np.random.choice(L[u], size=K, replace=False)
-              choice = choose_k_furthest(L[u], K)
+              choice = choose_k_furthest(pc[L[u], :], K)
               local_points = pc[choice, :] - np.array([-1.0 + (i + 0.5) * 2.0 / N, -1.0 + (j + 0.5) * 2.0 / N, -1.0 + (k + 0.5) * 2.0 / N], dtype=np.float32)
               data[i, j, k, 0 : K * NUM_PER_POINT_FEATURES] = np.reshape(local_points, (K * NUM_PER_POINT_FEATURES))
               data[i, j, k, K * NUM_PER_POINT_FEATURES] = 1.0
