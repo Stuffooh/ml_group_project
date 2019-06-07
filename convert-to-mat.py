@@ -41,11 +41,11 @@ CATEGORIES = [CATEGORIES[CATEGORY_NAMES.index(c)] for c in chosen_categories]
 def read_csv(data):
     # skip first row, thats the headers
     for row in data.strip().split('\n')[1:]:
-        yield tuple(map(str.strip, re.split(r'[,;]', row)))
+        yield tuple(map(str.strip, re.split(r'[,;]', row)))[:3]
 
 
 def index(values):
-    return {value: i for i, value in enumerate(set(values))}
+    return {value: i for i, value in enumerate(sorted(set(values)))}
 
 
 def extract_points_from_obj(data):
