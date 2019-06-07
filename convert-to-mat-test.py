@@ -78,6 +78,12 @@ CATEGORY_INDEX = index(CATEGORIES)
 
 print(f"NUMBER OF SUB-CATEGORIES: {len(LABEL_INDEX)}")
 print(f"NUMBER OF CATEGORIES: {len(CATEGORY_INDEX)}")
+print("ORDER OF CATEGORIES: ", end="")
+print(' '.join((chosen_categories[CATEGORIES.index(k)]
+                for k, v in sorted(CATEGORY_INDEX.items(),
+                                   key=lambda itm: itm[1]))))
+
+
 
 if input("Continue? (yes/no) ").strip() != "yes": exit(0)
 
