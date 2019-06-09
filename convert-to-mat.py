@@ -50,8 +50,8 @@ def read_csv(path):
 
 
 def make_mat(pc_id, category):
-    points = read_csv(os.path.join(POINTS_DIRECTORY, category, f'{pc_id}.pnt'))
-    seg = read_csv(os.path.join(SEG_DIRECTORY, category, f'{pc_id}.seg'))
+    points = tuple(read_csv(os.path.join(POINTS_DIRECTORY, category, f'{pc_id}.pnt')))
+    seg = tuple(read_csv(os.path.join(SEG_DIRECTORY, category, f'{pc_id}.seg')))
     point_array = np.array(points)
     label_array = np.array(seg)
     category_array = np.ones((1, 1)) * CATEGORIES.index(category)
