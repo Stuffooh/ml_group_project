@@ -14,7 +14,7 @@ CATEGORY_NAMES = ['airplane', 'bag', 'cap', 'car', 'chair',
                  'motorbike', 'mug', 'pistol', 'rocket', 'skateboard', 'table']
 
 USAGE = """\
-Usage:  convert-to-mat point-files-directory labels-file mat-dir
+Usage:  convert-to-mat point-files-directory seg-directory mat-dir
 
     point-files-directory : where to look for point-files
     seg-directory : where to look for seg-files
@@ -64,8 +64,8 @@ num_files = sum(map(len, (os.listdir(os.path.join(POINTS_DIRECTORY, category))
 
 
 print(f"Creating {num_files} files")
-progress_step = max(len(num_files) // 1000, 1)
-progress_bar = ProgressBar(len(num_files))
+progress_step = max(num_files // 1000, 1)
+progress_bar = ProgressBar(num_files)
 i = 0
 
 for category in CATEGORIES:
